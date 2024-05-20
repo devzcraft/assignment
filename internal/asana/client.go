@@ -12,8 +12,9 @@ import (
 
 type Client struct {
 	http              *resty.Client
-	bucket            chan struct{}
+	bucket            chan time.Time
 	requestsPerMinute int
+	ticker            *time.Ticker
 }
 
 // TODO: implement stop func to stop ticker
@@ -27,19 +28,25 @@ func NewClient(c *config.Config) *Client {
 		panic("Wrong rate limiter param")
 	}
 
-	bucket := make(chan struct{}, requestsPerMinte)
+	bucket := make(chan time.Time, requestsPerMinte)
 
-	ticker := time.NewTicker(1 * time.Minute)
+	rateLimit := 60 * time.Second / time.Duration(requestsPerMinte)
+	ticker := time.NewTicker(rateLimit)
 
 	asanaClient := &Client{
 		http:              client,
 		bucket:            bucket,
 		requestsPerMinute: requestsPerMinte,
+		ticker:            ticker,
 	}
 
-	go asanaClient.fillBucket(ticker.C)
+	go asanaClient.fillBucket()
 
 	return asanaClient
+}
+
+func (c *Client) Stop() {
+	c.ticker.Stop()
 }
 
 func (c *Client) HTTP() *resty.Client {
@@ -72,17 +79,8 @@ func (c *Client) Project(projectGID string) (*resty.Response, error) {
 }
 
 // fillBucket fill bucket every minute. By default limit is 150 reqeusts per second
-func (c *Client) fillBucket(ticker <-chan time.Time) {
-	// TODO: if on the first minute bucket is full and we can't send to bucket again
-	// it is possible that next minute we will fill bucket with 300 requests
-	for i := 0; i < c.requestsPerMinute; i++ {
-		c.bucket <- struct{}{}
-	}
-	for {
-		<-ticker
-		for i := 0; i < c.requestsPerMinute; i++ {
-			c.bucket <- struct{}{}
-		}
-
+func (c *Client) fillBucket() {
+	for t := range c.ticker.C {
+		c.bucket <- t
 	}
 }

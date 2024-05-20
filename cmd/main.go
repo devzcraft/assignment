@@ -14,9 +14,12 @@ func main() {
 	conf := config.MustLoad()
 
 	asanaClient := asana.NewClient(conf)
+	defer asanaClient.Stop()
 
 	delay := fetchDelay()
 
+	// we have 4 users and 1 project to extract,
+	// but simulate that we have a lot of data to extract
 	for {
 		<-time.Tick(delay)
 		runExtractor(asanaClient)
