@@ -6,7 +6,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/jarcoal/httpmock"
 
-	"example.com/stanciuc/testasan/internal/config"
+	"github.com/devzcraft/assignment/internal/config"
 )
 
 func TestClient_User(t *testing.T) {

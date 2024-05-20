@@ -25,3 +25,10 @@ make test
 ```
 make cover
 ```
+
+# TODO:
+By default extraction delay is 30s. To change it to 5 min. change `fetchDelay` function in main.go
+
+In case of scaling make sense to extract data in batches. Batches are divided between instances.
+For example, first instance extracts 1-1000 Users, second 1001-2000 and so on...
+

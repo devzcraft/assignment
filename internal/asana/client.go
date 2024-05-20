@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"example.com/stanciuc/testasan/internal/config"
+	"github.com/devzcraft/assignment/internal/config"
 )
 
 type Client struct {
@@ -16,6 +16,7 @@ type Client struct {
 	requestsPerMinute int
 }
 
+// TODO: implement stop func to stop ticker
 func NewClient(c *config.Config) *Client {
 	client := resty.New().
 		SetBaseURL(c.Asana.BaseURL).
@@ -72,6 +73,8 @@ func (c *Client) Project(projectGID string) (*resty.Response, error) {
 
 // fillBucket fill bucket every minute. By default limit is 150 reqeusts per second
 func (c *Client) fillBucket(ticker <-chan time.Time) {
+	// TODO: if on the first minute bucket is full and we can't send to bucket again
+	// it is possible that next minute we will fill bucket with 300 requests
 	for i := 0; i < c.requestsPerMinute; i++ {
 		c.bucket <- struct{}{}
 	}

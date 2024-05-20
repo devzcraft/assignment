@@ -1,4 +1,4 @@
-module example.com/stanciuc/testasan
+module github.com/devzcraft/assignment
 
 go 1.21.0
 

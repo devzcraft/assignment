@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"example.com/stanciuc/testasan/internal/asana"
-	"example.com/stanciuc/testasan/internal/config"
+	"github.com/devzcraft/assignment/internal/asana"
+	"github.com/devzcraft/assignment/internal/config"
 )
 
 func main() {
